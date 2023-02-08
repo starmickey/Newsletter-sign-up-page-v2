@@ -56,9 +56,17 @@ app.post('/login', function (req, res) {
 
 app.get('/', function (req, res) {
     const userAccount = controller.getUserAccount(req.ip);
-    console.log(userAccount);
-    res.render('home');
-})
+
+    if(userAccount === undefined){
+        res.redirect('/login');
+        
+    } else {
+        res.render('home');
+
+    }
+});
+
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Server is running');
 });
