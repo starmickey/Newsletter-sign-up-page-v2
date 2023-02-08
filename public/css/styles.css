@@ -1,0 +1,42 @@
+:root {
+    /* Palette */
+    --maroon-web: #850000ff;
+    --dark-red: #980707;
+    --rosso-corsa: #dc0000ff;
+    --jasmine: #ffdb89ff;
+    --blond: #fff6c3ff;
+    --light-blue: #2589BD;
+    --picotee-blue: #21268A;
+}
+
+body {
+    background-color: var(--dark-red);
+    color: white;
+    font-family: 'Lato', sans-serif;
+}
+
+.box {
+    max-width: 330px;
+    width: 80%;
+    margin: auto;
+    border-radius: 5px;
+    box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
+}
+
+
+.content-box {
+    background-color: var(--blond);
+    color: black;
+    padding: 2rem;
+    margin: 5rem auto;
+}
+
+.btn-primary {
+    background-color: var(--picotee-blue);
+    border-color: var(--picotee-blue);
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+    background-color: var(--light-blue);
+    border-color: var(--light-blue);
+}
