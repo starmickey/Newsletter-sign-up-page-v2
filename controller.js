@@ -10,12 +10,12 @@ const userAccounts = [];
 
 // Export functions
 
-function signup(name, password) {
+function signup(name, password, port) {
 
     return new Promise((resolve, reject) => {
-        
+
         mongooseInterface.createUser(name, password).then(function onFullFillment(userDTO) {
-            const newUserAccount = new UserAccount(userDTO.id, userDTO.name, UserAccountStatus.loggedIn);
+            const newUserAccount = new UserAccount(userDTO.id, userDTO.name, UserAccountStatus.loggedIn, port);
             userAccounts.push(newUserAccount);
             resolve(newUserAccount);
 
@@ -27,3 +27,30 @@ function signup(name, password) {
 }
 
 exports.signup = signup;
+
+
+
+function login(name, password, port) {
+
+    return new Promise((resolve, reject) => {
+        
+        mongooseInterface.getUser(name, password).then(function onFullFillment(userDTO) {
+            const newUserAccount = new UserAccount(userDTO.id, userDTO.name, UserAccountStatus.loggedIn, port);
+            userAccounts.push(newUserAccount);
+            resolve(newUserAccount);
+            
+        }, function onRejection(error) {
+            reject(error);
+        });   
+
+    })
+}
+
+exports.login = login;
+
+
+function getUserAccount (reqPort) {
+    return userAccounts.find(({ port }) => port === reqPort);
+}
+
+exports.getUserAccount = getUserAccount;
