@@ -9,7 +9,6 @@ main().catch(err => console.log(err));
 async function main() {
     mongoose.set('strictQuery', false);
     await mongoose.connect('mongodb://127.0.0.1:27017/journal');
-    console.log('connection established');
 }
 
 
@@ -52,6 +51,9 @@ function createUser(name, password) {
     })
 }
 
+exports.createUser = createUser;
+
+
 function getUser(name, password) {
     return new Promise((resolve, reject) => {
         User.findOne({name: name, password: password}, function (error, user) {
@@ -67,8 +69,5 @@ function getUser(name, password) {
     })
 }
 
-getUser('test5','test').then(function onFullfilled(user) {
-    console.log(user);
-}, function onRejection(error) {
-    console.log(error);
-})
+exports.getUser = getUser;
+

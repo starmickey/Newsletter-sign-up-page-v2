@@ -1,7 +1,7 @@
 class UserDTO {
     constructor(id, name) {
-        this.id = id;
-        this.name = name;
+        this.id = String(id);
+        this.name = String(name);
     }
 }
 
