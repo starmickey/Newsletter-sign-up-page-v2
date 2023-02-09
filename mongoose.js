@@ -166,13 +166,30 @@ exports.savePost = savePost;
 
 
 function getPostById(postId) {
-    return new Promise((resolve, reject) => {
-        Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
 
-            resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
+    return new Promise((resolve, reject) => {
+
+        Post.findOne({ _id: postId, rmDate: null }, function (error, post) {
+
+            if (error) {
+                reject(error)
+
+            } else if (post === null) {
+                reject('post not found')
+
+            } else {
+                resolve(new PostDTO(post.id, post.name, post.content))
+            }
         })
     })
 }
+
+
+// getPostById("63e4e713339e55e8133da956").then(function (post) {
+//     console.log(post);
+// }, function (error) {
+//     console.log(error);
+// })
 
 // getUser('test','test').then(function(user){
 //     const postUpdateDTO = new PostUpdateDTO('', 'Test Post','conteeennnnnt', user.id, SavingAction.new);
