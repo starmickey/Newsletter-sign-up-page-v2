@@ -113,6 +113,7 @@ function savePost(postUpdateDTO) {
             } else if (user === null) {
                 reject('user not found');
 
+
             } else if (postUpdateDTO.action === SavingAction.new) {
                 const post = new Post({
                     name: postUpdateDTO.name,
@@ -125,24 +126,28 @@ function savePost(postUpdateDTO) {
                     resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
                 })
 
-            } else if (postUpdateDTO.action === SavingAction.modified) {
+
+            } else if (postUpdateDTO.action === SavingAction.modified
+                || postUpdateDTO.action === SavingAction.removed) {
+
                 Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
-                    post.name = postUpdateDTO.name;
-                    post.content = postUpdateDTO.content;
+                    if (error) {
+                        reject(error)
+                    } else if (post === null) {
+                        reject('post not found')
 
+                    } else {
+                        if (postUpdateDTO.action === SavingAction.modified) {
+                            post.name = postUpdateDTO.name;
+                            post.content = postUpdateDTO.content;
+                        } else {
+                            post.rmDate = null;
+                        }
 
-                    post.save().then(function (newPost) {
-                        resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
-                    })
-                })
-
-            } else if (postUpdateDTO.action === SavingAction.removed) {
-                Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
-                    post.rmDate = null;
-
-                    post.save().then(function (newPost) {
-                        resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
-                    })
+                        post.save().then(function (newPost) {
+                            resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
+                        })
+                    }
                 })
 
             } else {
@@ -154,6 +159,20 @@ function savePost(postUpdateDTO) {
     })
 }
 
+
+exports.savePost = savePost;
+
+
+
+
+function getPostById(postId) {
+    return new Promise((resolve, reject) => {
+        Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
+
+            resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
+        })
+    })
+}
 
 // getUser('test','test').then(function(user){
 //     const postUpdateDTO = new PostUpdateDTO('', 'Test Post','conteeennnnnt', user.id, SavingAction.new);
