@@ -124,7 +124,7 @@ function savePost(postUpdateDTO) {
 
                 post.save().then(function (newPost) {
                     const authorDTO = new AuthorDTO(author.id, author.name);
-                    resolve(new PostDTO(newPost.id, newPost.name, newPost.content, authorDTO))
+                    resolve(new PostDTO(newPost.id, newPost.name, newPost.content, newPost.date, authorDTO))
                 })
 
 
@@ -144,7 +144,7 @@ function savePost(postUpdateDTO) {
 
                             post.save().then(function (newPost) {
                                 const authorDTO = new AuthorDTO(author.id, author.name);
-                                resolve(new PostDTO(newPost.id, newPost.name, newPost.content, authorDTO));
+                                resolve(new PostDTO(newPost.id, newPost.name, newPost.content, newPost.date, authorDTO));
                             })
 
                         } else {
@@ -188,7 +188,7 @@ function getPostById(postId) {
 
             } else {
                 const author = new AuthorDTO(post.author.id, post.author.name);
-                resolve(new PostDTO(post.id, post.name, post.content, author));
+                resolve(new PostDTO(post.id, post.name, post.content, post.date, author));
             }
         })
     })
@@ -196,3 +196,5 @@ function getPostById(postId) {
 
 
 exports.getPostById = getPostById;
+
+
