@@ -198,3 +198,66 @@ function getPostById(postId) {
 exports.getPostById = getPostById;
 
 
+
+
+function getAllPosts(latestDate, numPosts) {
+
+    let postDTOs = [];
+
+    return new Promise((resolve, reject) => {
+
+        Post.find({ date: { $lte: latestDate }, rmDate: null }, function (error, posts) {
+
+            if (error) {
+                reject(error);
+                
+            } else {
+                const numPostsReturned = (posts.length > numPosts) ? numPosts : posts.length;
+                for (let index = 0; index < numPostsReturned; index++) {
+                    const post = posts[index];
+
+                    const authorDTO = new AuthorDTO(post.author.id, post.author.name);
+                    postDTOs.push(new PostDTO(post.id, post.name, post.content, post.date, authorDTO));
+                }
+
+                resolve(postDTOs);
+            }
+        })
+    })
+}
+
+
+exports.getAllPosts = getAllPosts;
+
+
+
+// getAuthor('test','test').then(function (author) {
+//     const postUpdateDTOs = [];
+//     postUpdateDTOs.push(new PostUpdateDTO('', 'first post', 'content', author.id, UpdateAction.create));
+//     postUpdateDTOs.push(new PostUpdateDTO('', 'second post', 'content', author.id, UpdateAction.create));
+//     postUpdateDTOs.push(new PostUpdateDTO('', 'third post', 'content', author.id, UpdateAction.create));
+//     // postUpdateDTOs.push(new PostUpdateDTO('', 'fourth post', 'content', author.id, UpdateAction.create));
+//     // postUpdateDTOs.push(new PostUpdateDTO('', 'fifth post', 'content', author.id, UpdateAction.create));
+//     // postUpdateDTOs.push(new PostUpdateDTO('', 'sixth post', 'content', author.id, UpdateAction.create));
+//     // postUpdateDTOs.push(new PostUpdateDTO('', 'seventh post', 'content', author.id, UpdateAction.create));
+
+//     postUpdateDTOs.forEach(postUpdateDTO => {
+//         savePost(postUpdateDTO).then(function (postDTO) {
+//             console.log(postDTO);
+//         }, function (error) {
+//             console.log(error);
+//         })
+//     });
+
+// }, function (error) {
+// console.log(error);
+// })
+// getAllPosts(new Date(), 5).then(function (postDTOs) {
+// console.log(postDTOs);
+// }, function (error) {
+// console.log(error);
+// });
+
+// Post.find({ date: { $lte: new Date() }, rmDate: null }, function (error, posts) {
+    // console.log(posts);
+// })
