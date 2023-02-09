@@ -101,6 +101,15 @@ app.get('/', function (req, res) {
 });
 
 
+app.get('/about', function (req, res) {
+    const aboutPost = new PostUI('', 'About', 'this is my about content', new Date(), 'starmickey');
+    res.render('about', {
+        aboutPost: aboutPost,
+        loggedin: controller.isLoggedIn(req.ip)
+    })
+})
+
+
 app.listen(process.env.PORT || 3000, function () {
     console.log('Server is running');
 });
