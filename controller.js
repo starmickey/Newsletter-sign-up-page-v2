@@ -11,13 +11,20 @@ const authorAccounts = [];
 
 // Export functions
 
+function isLoggedIn(reqPort) {
+    const authorAccount = authorAccounts.find(({ port }) => port === reqPort);
+    return authorAccount !== undefined;
+}
+
+exports.isLoggedIn = isLoggedIn;
+
+
 function signOut(reqPort) {
     const authorAccount = authorAccounts.find(({ port }) => port === reqPort);
     const index = authorAccounts.indexOf(authorAccount);
     if (index > -1) {
         authorAccounts.splice(index, 1);
     }
-
 }
 
 exports.signOut = signOut;

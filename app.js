@@ -17,7 +17,10 @@ app.set('trust proxy', true)
 // Event handlers
 
 app.get('/signup', function (req, res) {
-    res.render('signup', {message: ''});
+    res.render('signup', {
+        message: '',
+        loggedin: controller.isLoggedIn(req.ip)
+    });
 })
 
 app.post('/signup', function (req, res) {
@@ -26,11 +29,17 @@ app.post('/signup', function (req, res) {
 
     }, function onRejection(error) {
         if (error === 'author already created') {
-            res.render('signup', {message: 'That author name already exists. Please, try another one.'});
+            res.render('signup', {
+                message: 'That author name already exists. Please, try another one.',
+                loggedin: controller.isLoggedIn(req.ip)
+            });
        
         } else {
             console.log(error);
-            res.render('signup', {message: 'Something went wrong. Please, try again.'});
+            res.render('signup', {
+                message: 'Something went wrong. Please, try again.',
+                loggedin: controller.isLoggedIn(req.ip)
+            });
 
         }
     });
@@ -38,17 +47,27 @@ app.post('/signup', function (req, res) {
 });
 
 app.get('/login', function (req, res) {
-    res.render('login', {message: ''});
+    res.render('login', {
+        message: '',
+        loggedin: controller.isLoggedIn(req.ip)
+    });
 })
 
 app.post('/login', function (req, res) {
     controller.login(req.body.authorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
+
     }, function onRejection(error) {
         if(error === 'Author not found'){
-            res.render('login', {message: 'Author name or password invalid. Please, try again.'})
+            res.render('login', {
+                message: 'Author name or password invalid. Please, try again.',
+                loggedin: controller.isLoggedIn(req.ip)
+            })
         } else {
-            res.render('login', {message: 'Something went wrong. Please, try again.'});
+            res.render('login', {
+                message: 'Something went wrong. Please, try again.',
+                loggedin: controller.isLoggedIn(req.ip)
+            });
         }
     })
 })
@@ -66,7 +85,10 @@ app.get('/', function (req, res) {
 
         controller.getAllPosts(new Date()).then(
             function onFullFillment(postUIs) {
-                res.render('home', {homePost: homePost, posts: postUIs});
+                res.render('home', {
+                    homePost: homePost, posts: postUIs,
+                    loggedin: controller.isLoggedIn(req.ip)
+                });
                 
             },
             function onRejection(error) {
