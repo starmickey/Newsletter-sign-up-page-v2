@@ -18,7 +18,7 @@ async function main() {
 
 // Schemas
 
-const userSchema = new mongoose.Schema({
+const authorSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-const User = new mongoose.model('user', userSchema);
+const Author = new mongoose.model('author', authorSchema);
 
 
 const postSchema = new mongoose.Schema({
@@ -46,7 +46,7 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     author: {
-        type: userSchema,
+        type: authorSchema,
         required: true
     },
     rmDate: {
@@ -61,17 +61,17 @@ const Post = new mongoose.model('post', postSchema);
 
 // Export functions
 
-function createUser(name, password) {
+function createAuthor(name, password) {
     return new Promise((resolve, reject) => {
-        User.findOne({ name: name }, function (error, user) {
+        Author.findOne({ name: name }, function (error, author) {
             if (error) {
                 reject(error);
-            } else if (user !== null) {
-                reject('user already created');
+            } else if (author !== null) {
+                reject('author already created');
             } else {
-                const user = new User({ name: name, password: password });
-                user.save().then(function (user) {
-                    resolve(new AuthorDTO(user.id, user.name));
+                const author = new Author({ name: name, password: password });
+                author.save().then(function (author) {
+                    resolve(new AuthorDTO(author.id, author.name));
                 });
 
             }
@@ -80,25 +80,25 @@ function createUser(name, password) {
     })
 }
 
-exports.createUser = createUser;
+exports.createAuthor = createAuthor;
 
 
-function getUser(name, password) {
+function getAuthor(name, password) {
     return new Promise((resolve, reject) => {
-        User.findOne({ name: name, password: password }, function (error, user) {
+        Author.findOne({ name: name, password: password }, function (error, author) {
             if (error) {
                 reject(error);
-            } else if (user === null) {
-                reject('user not found');
+            } else if (author === null) {
+                reject('author not found');
 
             } else {
-                resolve(new AuthorDTO(user.id, user.name));
+                resolve(new AuthorDTO(author.id, author.name));
             }
         })
     })
 }
 
-exports.getUser = getUser;
+exports.getAuthor = getAuthor;
 
 
 
@@ -106,29 +106,30 @@ function savePost(postUpdateDTO) {
 
     return new Promise((resolve, reject) => {
 
-        User.findOne({ _id: postUpdateDTO.authorId, rmDate: null }, function (error, user) {
+        Author.findOne({ _id: postUpdateDTO.authorId }, function (error, author) {
             if (error) {
                 reject(error);
 
-            } else if (user === null) {
-                reject('user not found');
+            } else if (author === null) {
+                reject('author not found');
 
 
-            } else if (postUpdateDTO.action === UpdateAction.new) {
+            } else if (postUpdateDTO.action === UpdateAction.create) {
                 const post = new Post({
                     name: postUpdateDTO.name,
                     content: postUpdateDTO.content,
                     date: new Date(),
-                    author: user
+                    author: author
                 });
 
                 post.save().then(function (newPost) {
-                    resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
+                    const authorDTO = new AuthorDTO(author.id, author.name);
+                    resolve(new PostDTO(newPost.id, newPost.name, newPost.content, authorDTO))
                 })
 
 
-            } else if (postUpdateDTO.action === UpdateAction.modified
-                || postUpdateDTO.action === UpdateAction.removed) {
+            } else if (postUpdateDTO.action === UpdateAction.modify
+                || postUpdateDTO.action === UpdateAction.remove) {
 
                 Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
                     if (error) {
@@ -137,16 +138,24 @@ function savePost(postUpdateDTO) {
                         reject('post not found')
 
                     } else {
-                        if (postUpdateDTO.action === UpdateAction.modified) {
+                        if (postUpdateDTO.action === UpdateAction.modify) {
                             post.name = postUpdateDTO.name;
                             post.content = postUpdateDTO.content;
+
+                            post.save().then(function (newPost) {
+                                const authorDTO = new AuthorDTO(author.id, author.name);
+                                resolve(new PostDTO(newPost.id, newPost.name, newPost.content, authorDTO));
+                            })
+
                         } else {
-                            post.rmDate = null;
+                            post.rmDate = new Date();
+                            post.save().then(function () {
+                                resolve('post removed');
+                            })
+
                         }
 
-                        post.save().then(function (newPost) {
-                            resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
-                        })
+
                     }
                 })
 
@@ -186,26 +195,4 @@ function getPostById(postId) {
 }
 
 
-// getPostById("63e4e713339e55e8133da956").then(function (post) {
-//     const postUpdateDTO = new PostUpdateDTO(post.id, post.name, 'comidaaa', post.author.id, UpdateAction.modified);
-//     console.log(postUpdateDTO);
-//     savePost(postUpdateDTO).then(function (postDTO) {
-//         console.log(postDTO);
-//     }, function (error) {
-//         console.log(error);
-//     })
-// }, function (error) {
-//     console.log(error);
-// })
-
-// getUser('test','test').then(function(user){
-//     const postUpdateDTO = new PostUpdateDTO('', 'Test Post','conteeennnnnt', user.id, UpdateAction.new);
-//     savePost(postUpdateDTO).then(function (post) {
-//         console.log(post);
-//     },  function (error) {
-//         console.log(error);
-//     })
-// }, function(error) {
-//     console.log(error);
-// })
-
+exports.getPostById = getPostById;
