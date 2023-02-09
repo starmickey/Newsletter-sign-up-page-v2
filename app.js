@@ -63,14 +63,17 @@ app.get('/', function (req, res) {
         
     } else {
         const homePost = new PostUI('', 'Home', 'this is my home content', new Date(), 'starmickey');
-        const posts = [];
-        posts.push(new PostUI('', 'Post', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum", new Date(), 'starmickey'));
-        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
-        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
-        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
-        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
 
-        res.render('home', {homePost: homePost, posts: posts});
+        controller.getAllPosts(new Date()).then(
+            function onFullFillment(postUIs) {
+                res.render('home', {homePost: homePost, posts: postUIs});
+                
+            },
+            function onRejection(error) {
+                console.log(error);
+                redirect('/');
+            }
+        )
 
     }
 });

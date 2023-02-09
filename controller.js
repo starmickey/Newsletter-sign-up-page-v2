@@ -2,6 +2,7 @@
 const mongooseInterface = require(__dirname + '/mongoose.js');
 const { AuthorAccount } = require(__dirname + '/data-objects/AuthorAccount.js');
 const { AuthorAccountStatus } = require("./data-objects/AuthorAccountStatus");
+const { PostUI } = require(__dirname + '/data-objects/PostUI.js');
 
 
 // Status variables
@@ -63,11 +64,39 @@ function login(name, password, port) {
 exports.login = login;
 
 
+
 function getAuthorAccount(reqPort) {
     return authorAccounts.find(({ port }) => port === reqPort);
 }
 
 exports.getAuthorAccount = getAuthorAccount;
+
+
+
+function getAllPosts(latestDate) {
+
+    let postUIs = [];
+    
+    return new Promise((resolve, reject) => {
+        
+        mongooseInterface.getAllPosts(latestDate, 10).then(
+            function onFullFillment(postDTOs) {
+                postDTOs.forEach(postDTO => {
+                    postUIs.push(new PostUI(postDTO.id, postDTO.name,
+                        postDTO.content, postDTO.date, postDTO.author.name));
+                });
+
+                resolve(postUIs);
+            },
+
+            function onRejection(error) {
+                reject(error);
+            }
+        )
+    })
+}
+
+exports.getAllPosts = getAllPosts;
 
 
 
