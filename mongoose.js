@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { SavePostDTO } = require('./data-objects/SavePostDTO');
+const { PostUpdateDTO } = require('./data-objects/PostUpdateDTO');
 const { SavingAction } = require('./data-objects/SavingAction');
 const { UserDTO } = require(__dirname + '/data-objects/UserDTO.js');
 const { PostDTO } = require(__dirname + '/data-objects/PostDTO.js');
@@ -102,32 +102,67 @@ exports.getUser = getUser;
 
 
 
-function savePost(savePostDTO) {
+function savePost(postUpdateDTO) {
 
     return new Promise((resolve, reject) => {
 
-        User.findOne({ _id: savePostDTO.authorId }, function (error, user) {
+        User.findOne({ _id: postUpdateDTO.authorId, rmDate: null }, function (error, user) {
             if (error) {
                 reject(error);
 
             } else if (user === null) {
                 reject('user not found');
 
-            } else if (savePostDTO.action === SavingAction.new) {
+            } else if (postUpdateDTO.action === SavingAction.new) {
                 const post = new Post({
-                    name: savePostDTO.name,
-                    content: savePostDTO.content,
+                    name: postUpdateDTO.name,
+                    content: postUpdateDTO.content,
                     date: new Date(),
                     author: user
                 });
 
-                post.save().then(function (post) {
-                    resolve(new PostDTO(post.id, post.name, post.content))
+                post.save().then(function (newPost) {
+                    resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
                 })
+
+            } else if (postUpdateDTO.action === SavingAction.modified) {
+                Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
+                    post.name = postUpdateDTO.name;
+                    post.content = postUpdateDTO.content;
+
+
+                    post.save().then(function (newPost) {
+                        resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
+                    })
+                })
+
+            } else if (postUpdateDTO.action === SavingAction.removed) {
+                Post.findOne({ _id: postUpdateDTO.id, rmDate: null }, function (error, post) {
+                    post.rmDate = null;
+
+                    post.save().then(function (newPost) {
+                        resolve(new PostDTO(newPost.id, newPost.name, newPost.content))
+                    })
+                })
+
+            } else {
+                reject('Error. SavePost action: ' + postUpdateDTO.action);
+
             }
 
-        
         })
-})
+    })
 }
+
+
+// getUser('test','test').then(function(user){
+//     const postUpdateDTO = new PostUpdateDTO('', 'Test Post','conteeennnnnt', user.id, SavingAction.new);
+//     savePost(postUpdateDTO).then(function (post) {
+//         console.log(post);
+//     },  function (error) {
+//         console.log(error);
+//     })
+// }, function(error) {
+//     console.log(error);
+// })
 

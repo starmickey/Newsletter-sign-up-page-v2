@@ -1,4 +1,4 @@
-class SavePostDTO {
+class PostUpdateDTO {
     constructor(id, name, content, authorId, action){
         this.id = String(id);
         this.name = String(name);
@@ -8,4 +8,4 @@ class SavePostDTO {
     }
 }
 
-exports.SavePostDTO = SavePostDTO;
+exports.PostUpdateDTO = PostUpdateDTO;
