@@ -1,6 +1,6 @@
 let nextAccountToken = 0;
 
-class UserAccount {
+class AuthorAccount {
     constructor(id, name, status, port){
         this.id = String(id);
         this.name = String(name);
@@ -11,4 +11,4 @@ class UserAccount {
 
 }
 
-exports.UserAccount = UserAccount;
+exports.AuthorAccount = AuthorAccount;

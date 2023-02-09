@@ -20,7 +20,7 @@ app.get('/signup', function (req, res) {
 })
 
 app.post('/signup', function (req, res) {
-    controller.signup(req.body.userName, req.body.password, req.ip).then(function onFullFillment(userAccount) {
+    controller.signup(req.body.userName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
 
     }, function onRejection(error) {
@@ -41,7 +41,7 @@ app.get('/login', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
-    controller.login(req.body.userName, req.body.password, req.ip).then(function onFullFillment(userAccount) {
+    controller.login(req.body.userName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
     }, function onRejection(error) {
         if(error === 'user not found'){
@@ -55,9 +55,9 @@ app.post('/login', function (req, res) {
 
 
 app.get('/', function (req, res) {
-    const userAccount = controller.getUserAccount(req.ip);
+    const authorAccount = controller.getUserAccount(req.ip);
 
-    if(userAccount === undefined){
+    if(authorAccount === undefined){
         res.redirect('/login');
         
     } else {

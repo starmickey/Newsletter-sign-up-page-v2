@@ -1,7 +1,7 @@
 
 const mongooseInterface = require(__dirname + '/mongoose.js');
-const { UserAccount } = require(__dirname + '/data-objects/UserAccount.js');
-const { UserAccountStatus } = require("./data-objects/UserAccountStatus");
+const { AuthorAccount } = require(__dirname + '/data-objects/AuthorAccount.js');
+const { AuthorAccountStatus } = require("./data-objects/AuthorAccountStatus");
 
 
 // Status variables
@@ -11,8 +11,8 @@ const userAccounts = [];
 // Export functions
 
 function signOut(reqPort) {
-    const userAccount = userAccounts.find(({ port }) => port === reqPort);
-    const index = userAccounts.indexOf(userAccount);
+    const authorAccount = userAccounts.find(({ port }) => port === reqPort);
+    const index = userAccounts.indexOf(authorAccount);
     if (index > -1) {
         userAccounts.splice(index, 1);
     }
@@ -26,9 +26,9 @@ function signup(name, password, port) {
 
     return new Promise((resolve, reject) => {
 
-        mongooseInterface.createUser(name, password).then(function onFullFillment(userDTO) {
+        mongooseInterface.createUser(name, password).then(function onFullFillment(authorDTO) {
             signOut(port);
-            const newUserAccount = new UserAccount(userDTO.id, userDTO.name, UserAccountStatus.loggedIn, port);
+            const newUserAccount = new AuthorAccount(authorDTO.id, authorDTO.name, AuthorAccountStatus.loggedIn, port);
             userAccounts.push(newUserAccount);
             resolve(newUserAccount);
 
@@ -48,9 +48,9 @@ function login(name, password, port) {
 
     return new Promise((resolve, reject) => {
 
-        mongooseInterface.getUser(name, password).then(function onFullFillment(userDTO) {
+        mongooseInterface.getUser(name, password).then(function onFullFillment(authorDTO) {
             signOut(port);
-            const newUserAccount = new UserAccount(userDTO.id, userDTO.name, UserAccountStatus.loggedIn, port);
+            const newUserAccount = new AuthorAccount(authorDTO.id, authorDTO.name, AuthorAccountStatus.loggedIn, port);
             userAccounts.push(newUserAccount);
             resolve(newUserAccount);
 
