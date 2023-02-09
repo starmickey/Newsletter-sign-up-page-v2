@@ -210,7 +210,7 @@ function getAllPosts(latestDate, numPosts) {
 
             if (error) {
                 reject(error);
-                
+
             } else {
                 const numPostsReturned = (posts.length > numPosts) ? numPosts : posts.length;
                 for (let index = 0; index < numPostsReturned; index++) {

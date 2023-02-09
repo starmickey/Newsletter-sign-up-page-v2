@@ -22,7 +22,7 @@ function signOut(reqPort) {
 exports.signOut = signOut;
 
 
-function signup(name, password, port) {
+function signUp(name, password, port) {
 
     return new Promise((resolve, reject) => {
 
@@ -39,12 +39,11 @@ function signup(name, password, port) {
     })
 }
 
-exports.signup = signup;
+exports.signUp = signUp;
 
 
 
 function login(name, password, port) {
-    console.log(authorAccounts);
 
     return new Promise((resolve, reject) => {
 
@@ -69,6 +68,8 @@ function getAuthorAccount(reqPort) {
 }
 
 exports.getAuthorAccount = getAuthorAccount;
+
+
 
 
 

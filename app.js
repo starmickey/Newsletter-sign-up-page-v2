@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const { PostUI } = require('./data-objects/PostUI');
 const controller = require(__dirname + '/controller.js')
 
 const app = express();
@@ -20,7 +21,7 @@ app.get('/signup', function (req, res) {
 })
 
 app.post('/signup', function (req, res) {
-    controller.signup(req.body.AuthorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
+    controller.signUp(req.body.authorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
 
     }, function onRejection(error) {
@@ -41,7 +42,7 @@ app.get('/login', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
-    controller.login(req.body.AuthorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
+    controller.login(req.body.authorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
     }, function onRejection(error) {
         if(error === 'Author not found'){
@@ -61,7 +62,15 @@ app.get('/', function (req, res) {
         res.redirect('/login');
         
     } else {
-        res.render('home');
+        const homePost = new PostUI('', 'Home', 'this is my home content', new Date(), 'starmickey');
+        const posts = [];
+        posts.push(new PostUI('', 'Post', "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum", new Date(), 'starmickey'));
+        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
+        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
+        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
+        posts.push(new PostUI('', 'Post', 'this is my post content', new Date(), 'starmickey'));
+
+        res.render('home', {homePost: homePost, posts: posts});
 
     }
 });

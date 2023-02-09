@@ -9,20 +9,41 @@
     --picotee-blue: #21268A;
 }
 
+/* ========== SECTIONS ========== */
+
 body {
     background-color: var(--dark-red);
     color: white;
     font-family: 'Lato', sans-serif;
 }
 
+
+#header {
+    background-color: var(--blond);
+    color: black;
+    text-align: center;
+}
+
+/* =========== FONTS ============= */
+
+.big-heading {
+    font-size: 3rem;
+}
+
+.little-subtitle {
+    font-size: 1.1rem;
+    color: var(--light-blue);
+    font-style: italic;
+}
+
+
+/* ========= COMPONENTS ========= */
+
 .box {
-    max-width: 330px;
-    width: 80%;
     margin: auto;
     border-radius: 5px;
     box-shadow: 5px 5px 15px -5px rgba(0, 0, 0, 0.3);
 }
-
 
 .content-box {
     background-color: var(--blond);
@@ -30,6 +51,18 @@ body {
     padding: 2rem;
     margin: 5rem auto;
 }
+
+.small-box {
+    max-width: 330px;
+    width: 80%;
+}
+
+.large-box {
+    width: 100%;
+}
+
+
+/* ----------- Buttons ----------- */
 
 .btn-primary {
     background-color: var(--picotee-blue);
@@ -40,3 +73,4 @@ body {
     background-color: var(--light-blue);
     border-color: var(--light-blue);
 }
+

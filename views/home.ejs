@@ -1,1 +1,27 @@
-<h1>Home</h1>
+<%- include ('partials/header') -%>
+
+<header id="header">
+    <div class="container py-4">
+        <h1 class="big-heading"><%= homePost.name %> </h1>
+        <p><%= homePost.content %> </p>
+
+    </div>
+</header>
+
+<div class="container">
+    
+
+
+  <% posts.forEach(post => { %>
+    <div class="box content-box large-box">
+        <h2><%= post.name %> </h2>
+        <p class="little-subtitle"><%= post.authorName %> <%= post.date %> </p>
+        <p><%= post.content %> </p>
+
+    </div>
+  <% }) %>
+
+</div>
+
+
+<%- include ('partials/footer') -%>
