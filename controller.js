@@ -6,15 +6,15 @@ const { AuthorAccountStatus } = require("./data-objects/AuthorAccountStatus");
 
 // Status variables
 
-const userAccounts = [];
+const authorAccounts = [];
 
 // Export functions
 
 function signOut(reqPort) {
-    const authorAccount = userAccounts.find(({ port }) => port === reqPort);
-    const index = userAccounts.indexOf(authorAccount);
+    const authorAccount = authorAccounts.find(({ port }) => port === reqPort);
+    const index = authorAccounts.indexOf(authorAccount);
     if (index > -1) {
-        userAccounts.splice(index, 1);
+        authorAccounts.splice(index, 1);
     }
 
 }
@@ -26,11 +26,11 @@ function signup(name, password, port) {
 
     return new Promise((resolve, reject) => {
 
-        mongooseInterface.createUser(name, password).then(function onFullFillment(authorDTO) {
+        mongooseInterface.createAuthor(name, password).then(function onFullFillment(authorDTO) {
             signOut(port);
-            const newUserAccount = new AuthorAccount(authorDTO.id, authorDTO.name, AuthorAccountStatus.loggedIn, port);
-            userAccounts.push(newUserAccount);
-            resolve(newUserAccount);
+            const newAuthorAccount = new AuthorAccount(authorDTO.id, authorDTO.name, AuthorAccountStatus.loggedIn, port);
+            authorAccounts.push(newAuthorAccount);
+            resolve(newAuthorAccount);
 
         }, function onRejection(error) {
             reject(error);
@@ -44,15 +44,15 @@ exports.signup = signup;
 
 
 function login(name, password, port) {
-    console.log(userAccounts);
+    console.log(authorAccounts);
 
     return new Promise((resolve, reject) => {
 
-        mongooseInterface.getUser(name, password).then(function onFullFillment(authorDTO) {
+        mongooseInterface.getAuthor(name, password).then(function onFullFillment(authorDTO) {
             signOut(port);
-            const newUserAccount = new AuthorAccount(authorDTO.id, authorDTO.name, AuthorAccountStatus.loggedIn, port);
-            userAccounts.push(newUserAccount);
-            resolve(newUserAccount);
+            const newAuthorAccount = new AuthorAccount(authorDTO.id, authorDTO.name, AuthorAccountStatus.loggedIn, port);
+            authorAccounts.push(newAuthorAccount);
+            resolve(newAuthorAccount);
 
         }, function onRejection(error) {
             reject(error);
@@ -64,11 +64,11 @@ function login(name, password, port) {
 exports.login = login;
 
 
-function getUserAccount(reqPort) {
-    return userAccounts.find(({ port }) => port === reqPort);
+function getAuthorAccount(reqPort) {
+    return authorAccounts.find(({ port }) => port === reqPort);
 }
 
-exports.getUserAccount = getUserAccount;
+exports.getAuthorAccount = getAuthorAccount;
 
 
 

@@ -20,12 +20,12 @@ app.get('/signup', function (req, res) {
 })
 
 app.post('/signup', function (req, res) {
-    controller.signup(req.body.userName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
+    controller.signup(req.body.AuthorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
 
     }, function onRejection(error) {
-        if (error === 'user already created') {
-            res.render('signup', {message: 'That user name already exists. Please, try another one.'});
+        if (error === 'author already created') {
+            res.render('signup', {message: 'That author name already exists. Please, try another one.'});
        
         } else {
             console.log(error);
@@ -41,11 +41,11 @@ app.get('/login', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
-    controller.login(req.body.userName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
+    controller.login(req.body.AuthorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
     }, function onRejection(error) {
-        if(error === 'user not found'){
-            res.render('login', {message: 'User name or password invalid. Please, try again.'})
+        if(error === 'Author not found'){
+            res.render('login', {message: 'Author name or password invalid. Please, try again.'})
         } else {
             res.render('login', {message: 'Something went wrong. Please, try again.'});
         }
@@ -55,7 +55,7 @@ app.post('/login', function (req, res) {
 
 
 app.get('/', function (req, res) {
-    const authorAccount = controller.getUserAccount(req.ip);
+    const authorAccount = controller.getAuthorAccount(req.ip);
 
     if(authorAccount === undefined){
         res.redirect('/login');
