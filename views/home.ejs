@@ -2,7 +2,7 @@
 <%- include ('partials/navbar') -%>
 
 
-<header id="header">
+<header class="light-section text-center">
     <div class="container py-4">
         <h1 class="big-heading"><%= homePost.name %> </h1>
         <p><%= homePost.content %> </p>
@@ -11,8 +11,6 @@
 </header>
 
 <div class="container">
-    
-
 
   <% posts.forEach(post => { %>
     <div class="box content-box large-box">

@@ -18,16 +18,14 @@ body {
 }
 
 
-#header {
+.light-section {
     background-color: var(--jasmine);
     color: black;
-    text-align: center;
 }
 
 .navbar {
     /* border-bottom: 2px solid var(--dark-red); */
     background-color: var(--blond);
-
 }
 /* =========== FONTS ============= */
 
