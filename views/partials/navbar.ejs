@@ -8,13 +8,7 @@
     <ul class="navbar-nav mr-auto">
 
       <li class="nav-item active">
-
-        <% if (loggedin) { %>
         <a class="nav-link" href="/">Home </a>
-        <% } else { %>
-        <a class="nav-link disabled" href="/">Home </a>
-        <% } %>
-
       </li>
 
       <li class="nav-item">
@@ -38,7 +32,7 @@
         </a>
 
         <ul class="dropdown-menu">
-          <li><a class="dropdown-item" href="#">Sign Out</a></li>
+          <li><a class="dropdown-item" href="/signout">Sign Out</a></li>
         </ul>
       </li>
 

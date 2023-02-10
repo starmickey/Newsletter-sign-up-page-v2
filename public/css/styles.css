@@ -17,20 +17,31 @@ body {
     font-family: 'Lato', sans-serif;
 }
 
-
 .light-section {
     background-color: var(--jasmine);
     color: black;
 }
 
 .navbar {
-    /* border-bottom: 2px solid var(--dark-red); */
     background-color: var(--blond);
 }
+
+.vertical-centered-section {
+    margin: 10%;
+}
+
 /* =========== FONTS ============= */
+
+.gigantic-heading {
+    font-size: 4rem;
+}
 
 .big-heading {
     font-size: 3rem;
+}
+
+.subtitle {
+    font-size: 1.5rem;
 }
 
 .little-subtitle {

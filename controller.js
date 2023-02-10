@@ -111,14 +111,35 @@ exports.getAllPosts = getAllPosts;
 
 
 
+function getPost(id) {
+
+    return new Promise((resolve, reject) => {
+
+        mongooseInterface.getPostById(id).then(
+
+            function onFullfillment(post) {
+                const postUI = new PostUI(post.id, post.name, post.content, post.date, post.author.name);
+                resolve(postUI);
+            }, 
+            function onRejection(error) {
+                reject(error);
+            })
+    })
+}
+
+exports.getPost = getPost;
+
+
+
 function createPost(name, content, port) {
     const authorAccount = getAuthorAccount(port);
     const post = new PostUpdateDTO('', name, content, authorAccount.id, UpdateAction.create);
-    console.log(post);
     return mongooseInterface.savePost(post);
 }
 
 exports.createPost = createPost;
+
+
 
 
 

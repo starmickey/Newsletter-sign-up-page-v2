@@ -3,22 +3,28 @@
 
 
 <header class="light-section text-center">
-    <div class="container py-4">
-        <h1 class="big-heading"><%= homePost.name %> </h1>
-        <p><%= homePost.content %> </p>
-
-    </div>
+  <div class="container py-4">
+    <h1 class="big-heading"><%= homePost.name %> </h1>
+    <p><%= homePost.content %> </p>
+  </div>
 </header>
 
 <div class="container">
 
   <% posts.forEach(post => { %>
-    <div class="box content-box large-box">
-        <h2><%= post.name %> </h2>
-        <p class="little-subtitle"><%= post.authorName %> - <%= post.date %> </p>
-        <p><%= post.content %> </p>
+  <div class="box content-box large-box">
+    <h2><%= post.name %> </h2>
+    <p class="little-subtitle"><%= post.authorName %> - <%= post.date %> </p>
+    <p>
+      <% if(post.content.length < 300) { %>
+      <%= post.content %>
+      <% } else { %>
+      <%= post.content.substr(0,300) %> ...
+      <a href="/post?id=<%= post.id %>">Read more</a>
+      <% } %>
+    </p>
 
-    </div>
+  </div>
   <% }) %>
 
 </div>

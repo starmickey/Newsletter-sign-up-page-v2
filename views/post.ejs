@@ -1,0 +1,13 @@
+<%- include ('partials/header') -%>
+<%- include ('partials/navbar') -%>
+
+<main class="container">
+    <div class="box content-box">
+        <h1 class="big-heading text-center"><%= post.name %> </h1>
+        <p class="little-subtitle text-center"><%= post.authorName %> - <%= post.date %> </p>
+        <p><%= post.content %> </p>
+
+    </div>
+</main>
+
+<%- include ('partials/footer') -%>

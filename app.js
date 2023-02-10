@@ -8,7 +8,7 @@ const app = express();
 // Config App
 
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('view engine', 'ejs');
 app.set('trust proxy', true)
@@ -33,7 +33,7 @@ app.post('/signup', function (req, res) {
                 message: 'That author name already exists. Please, try another one.',
                 loggedin: controller.isLoggedIn(req.ip)
             });
-       
+
         } else {
             console.log(error);
             res.render('signup', {
@@ -59,7 +59,7 @@ app.post('/login', function (req, res) {
         res.redirect('/');
 
     }, function onRejection(error) {
-        if(error === 'Author not found'){
+        if (error === 'Author not found') {
             res.render('login', {
                 message: 'Author name or password invalid. Please, try again.',
                 loggedin: controller.isLoggedIn(req.ip)
@@ -77,35 +77,28 @@ app.post('/login', function (req, res) {
 
 app.get('/', function (req, res) {
 
-    const authorAccount = controller.getAuthorAccount(req.ip);
+    const homePost = new PostUI('', 'Home', 'this is my home content', new Date(), 'starmickey');
 
-    if(authorAccount === undefined){
-        res.redirect('/login');
-        
-    } else {
-        const homePost = new PostUI('', 'Home', 'this is my home content', new Date(), 'starmickey');
+    controller.getAllPosts(new Date()).then(
+        function onFullFillment(postUIs) {
+            res.render('home', {
+                homePost: homePost, posts: postUIs,
+                loggedin: controller.isLoggedIn(req.ip)
+            });
+        },
+        function onRejection(error) {
+            console.log(error);
+            redirect('/');
+        }
+    )
 
-        controller.getAllPosts(new Date()).then(
-            function onFullFillment(postUIs) {
-                res.render('home', {
-                    homePost: homePost, posts: postUIs,
-                    loggedin: controller.isLoggedIn(req.ip)
-                });
-            },
-            function onRejection(error) {
-                console.log(error);
-                redirect('/');
-            }
-        )
-
-    }
 });
 
 
 app.get('/about', function (req, res) {
 
     const aboutPost = new PostUI('', 'About', 'this is my about content', new Date(), 'starmickey');
-    
+
     res.render('about', {
         aboutPost: aboutPost,
         loggedin: controller.isLoggedIn(req.ip)
@@ -114,10 +107,40 @@ app.get('/about', function (req, res) {
 })
 
 
+app.get('/post', function (req, res) {
+
+    controller.getPost(req.query.id).then(
+        function onFullfillment(post) {
+            res.render('post', {
+                post: post,
+                loggedin: controller.isLoggedIn(req.ip)
+            })
+        },
+        function onRejection(error) {
+            if (error === 'post not found') {
+                res.render('error', {
+                    title: 'Uh Oh!',
+                    description: 'post not found',
+                    loggedin: controller.isLoggedIn(req.ip)
+                });
+            } else {
+                res.render('error', {
+                    title: 'Uh Oh!',
+                    description: 'Something went wrong. Please, try again.',
+                    loggedin: controller.isLoggedIn(req.ip)
+                });
+            }
+        }
+    )
+
+
+})
+
+
 
 app.get('/compose', function (req, res) {
 
-    if( !controller.isLoggedIn(req.ip)){
+    if (!controller.isLoggedIn(req.ip)) {
         res.redirect('/login');
 
     } else {
@@ -130,13 +153,19 @@ app.get('/compose', function (req, res) {
 
 
 app.post('/compose', function (req, res) {
-    if( !controller.isLoggedIn(req.ip)){
+    if (!controller.isLoggedIn(req.ip)) {
         res.redirect('/login');
 
     } else {
         controller.createPost(req.body.postTitle, req.body.postBody, req.ip);
         res.redirect('/');
     }
+})
+
+
+app.get('/signout', function (req, res) {
+    controller.signOut(req.ip);
+    res.redirect('/login')
 })
 
 
