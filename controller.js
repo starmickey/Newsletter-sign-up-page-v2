@@ -97,7 +97,7 @@ function getAllPosts(latestDate) {
                     postUIs.push(new PostUI(postDTO.id, postDTO.name,
                         postDTO.content, postDTO.date, postDTO.author.name));
                 });
-                resolve(postUIs);
+                resolve(postUIs.reverse());
             },
 
             function onRejection(error) {
