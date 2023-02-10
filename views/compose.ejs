@@ -1,0 +1,32 @@
+<%- include ('partials/header') -%>
+<%- include ('partials/navbar') -%>
+
+<body class="light-section">
+
+  <header class="container py-4">
+    <h1 class="big-heading">Compose</h1>
+  </header>
+
+  <main class="container">
+
+    <form action="/compose" method="post">
+
+      <div class="form-group">
+        <label for="composeSectionTitle">Title</label>
+        <input class="form-control" id="composeSectionTitle" type="text" name="postTitle" autofocus>
+      </div>
+
+      <div class="form-group">
+        <label for="composeSectionPost">Post</label>
+        <textarea class="form-control" name="postBody" id="composeSectionPost" cols="30" rows="10"></textarea>
+      </div>
+
+      <button class="btn btn-primary my-4" type="submit">Publish</button>
+
+    </form>
+
+  </main>
+
+</body>
+
+<%- include ('partials/footer') -%>
