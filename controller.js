@@ -2,12 +2,16 @@
 const mongooseInterface = require(__dirname + '/mongoose.js');
 const { AuthorAccount } = require(__dirname + '/data-objects/AuthorAccount.js');
 const { AuthorAccountStatus } = require("./data-objects/AuthorAccountStatus");
+const { PostUpdateDTO } = require("./data-objects/PostUpdateDTO");
+const { UpdateAction } = require("./data-objects/UpdateAction");
 const { PostUI } = require(__dirname + '/data-objects/PostUI.js');
 
 
 // Status variables
 
 const authorAccounts = [];
+
+
 
 // Export functions
 
@@ -19,15 +23,13 @@ function isLoggedIn(reqPort) {
 exports.isLoggedIn = isLoggedIn;
 
 
-function signOut(reqPort) {
-    const authorAccount = authorAccounts.find(({ port }) => port === reqPort);
-    const index = authorAccounts.indexOf(authorAccount);
-    if (index > -1) {
-        authorAccounts.splice(index, 1);
-    }
+
+function getAuthorAccount(reqPort) {
+    return authorAccounts.find(({ port }) => port === reqPort);
 }
 
-exports.signOut = signOut;
+exports.getAuthorAccount = getAuthorAccount;
+
 
 
 function signUp(name, password, port) {
@@ -43,7 +45,6 @@ function signUp(name, password, port) {
         }, function onRejection(error) {
             reject(error);
         })
-
     })
 }
 
@@ -72,27 +73,30 @@ exports.login = login;
 
 
 
-function getAuthorAccount(reqPort) {
-    return authorAccounts.find(({ port }) => port === reqPort);
+function signOut(reqPort) {
+    const authorAccount = authorAccounts.find(({ port }) => port === reqPort);
+    const index = authorAccounts.indexOf(authorAccount);
+    if (index > -1) {
+        authorAccounts.splice(index, 1);
+    }
 }
 
-exports.getAuthorAccount = getAuthorAccount;
+exports.signOut = signOut;
 
 
 
 function getAllPosts(latestDate) {
 
     let postUIs = [];
-    
+
     return new Promise((resolve, reject) => {
-        
+
         mongooseInterface.getAllPosts(latestDate, 10).then(
             function onFullFillment(postDTOs) {
                 postDTOs.forEach(postDTO => {
                     postUIs.push(new PostUI(postDTO.id, postDTO.name,
                         postDTO.content, postDTO.date, postDTO.author.name));
                 });
-
                 resolve(postUIs);
             },
 
@@ -105,6 +109,16 @@ function getAllPosts(latestDate) {
 
 exports.getAllPosts = getAllPosts;
 
+
+
+function createPost(name, content, port) {
+    const authorAccount = getAuthorAccount(port);
+    const post = new PostUpdateDTO('', name, content, authorAccount.id, UpdateAction.create);
+    console.log(post);
+    return mongooseInterface.savePost(post);
+}
+
+exports.createPost = createPost;
 
 
 

@@ -54,6 +54,7 @@ app.get('/login', function (req, res) {
 })
 
 app.post('/login', function (req, res) {
+
     controller.login(req.body.authorName, req.body.password, req.ip).then(function onFullFillment(authorAccount) {
         res.redirect('/');
 
@@ -75,6 +76,7 @@ app.post('/login', function (req, res) {
 
 
 app.get('/', function (req, res) {
+
     const authorAccount = controller.getAuthorAccount(req.ip);
 
     if(authorAccount === undefined){
@@ -89,7 +91,6 @@ app.get('/', function (req, res) {
                     homePost: homePost, posts: postUIs,
                     loggedin: controller.isLoggedIn(req.ip)
                 });
-                
             },
             function onRejection(error) {
                 console.log(error);
@@ -102,18 +103,40 @@ app.get('/', function (req, res) {
 
 
 app.get('/about', function (req, res) {
+
     const aboutPost = new PostUI('', 'About', 'this is my about content', new Date(), 'starmickey');
+    
     res.render('about', {
         aboutPost: aboutPost,
         loggedin: controller.isLoggedIn(req.ip)
     })
+
 })
 
 
+
 app.get('/compose', function (req, res) {
-    res.render('compose', {
-        loggedin: controller.isLoggedIn(req.ip)
-    })
+
+    if( !controller.isLoggedIn(req.ip)){
+        res.redirect('/login');
+
+    } else {
+        res.render('compose', {
+            loggedin: controller.isLoggedIn(req.ip)
+        })
+    }
+
+})
+
+
+app.post('/compose', function (req, res) {
+    if( !controller.isLoggedIn(req.ip)){
+        res.redirect('/login');
+
+    } else {
+        controller.createPost(req.body.postTitle, req.body.postBody, req.ip);
+        res.redirect('/');
+    }
 })
 
 
