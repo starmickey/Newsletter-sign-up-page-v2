@@ -66,7 +66,7 @@ const responseSchema = new mongoose.Schema({
     content: {
         type: String,
         required: true
-    }, 
+    },
     date: {
         type: Date,
         required: true
@@ -266,27 +266,46 @@ exports.savePost = savePost;
 
 function saveResponse(respUpdateDTO) {
 
+    if (respUpdateDTO.action === UpdateAction.create) {
+        return createResponse(respUpdateDTO);
+
+    } else if (respUpdateDTO.action === UpdateAction.modify) {
+        return modifyResponse(respUpdateDTO);
+
+    } else if (respUpdateDTO.action === UpdateAction.remove) {
+        return removeResponse(respUpdateDTO);
+    
+    } else {
+        console.log("action: " + respUpdateDTO.action + " undefined.");
+
+    }
+
+}
+
+
+function createResponse(respUpdateDTO) {
+
     return new Promise((resolve, reject) => {
 
-        Author.findOne({_id: respUpdateDTO.authorId}, function(error, author) {
+        Author.findOne({ _id: respUpdateDTO.authorId }, function (error, author) {
 
-            if(error) {
+            if (error) {
                 reject(error);
 
             } else if (author === null) {
                 reject('author not found');
-            
+
             } else {
 
-                Post.findOne({_id: respUpdateDTO.postId, rmDate: null}, function(error, post) {
+                Post.findOne({ _id: respUpdateDTO.postId, rmDate: null }, function (error, post) {
+
                     if (error) {
                         reject(error);
 
                     } else if (post === null) {
                         reject('post not found');
-                    
-                    } else if (respUpdateDTO.action === UpdateAction.create){
 
+                    } else {
                         const response = new Response({
                             content: respUpdateDTO.content,
                             date: new Date(),
@@ -297,24 +316,75 @@ function saveResponse(respUpdateDTO) {
                         response.save().then(
                             function onFullFillment(resp) {
                                 resolve(new ResponseDTO(resp.id, resp.content, resp.author.name, resp.date));
-                        })
+                            }, function onRejection(error) {
+                                reject(error);
+                            }
+                        )
                     }
                 })
 
             }
         });
+
+    })
+
+}
+
+
+function modifyResponse(respUpdateDTO) {
+    
+    return new Promise((resolve, reject) => {
+        
+        Response.findOne({_id: respUpdateDTO.id, rmDate: null}, function (error, response) {
+            
+            if (error) {
+                reject(error);
+
+            } else if (response === null){
+                reject('response not found')
+
+            } else {
+                response.content = respUpdateDTO.content;
+                response.date = new Date();
+
+                response.save().then(
+                    function onSuccess (resp) {
+                        resolve(new ResponseDTO(resp.id, resp.content, resp.author.name, resp.date));
+                    }, 
+                    function onError(error) {
+                        reject(error);
+                    }
+                )                
+
+            }            
+        })
     })
 }
 
 
+function removeResponse(respUpdateDTO) {
+    
+    return new Promise((resolve, reject) => {
+        
+        Response.findOne({_id: respUpdateDTO.id, rmDate: null}, function (error, response) {
+           
+            if (error) {
+                reject(error);
 
-// getPostById('63ea880b2fb791702c61ee89').then(function (post) {
-//     // console.log(post);
-//     const r = new ResponseUpdateDTO('', 'contenttt', post.author.id, post.id, UpdateAction.create);
-//     console.log(r);
-//     saveResponse(r).then(function (res) {
-//         console.log(res);
-//     }, function (error) {
-//         console.log(error);
-//     })
-// })
+            } else if (response === null){
+                reject('response not found')
+
+            } else {
+                response.rmDate = new Date();
+                response.save().then(
+                    function onSuccess(r) {
+                        resolve('response successfully removed');
+                    },
+                    function onError(error) {
+                        reject(error);
+                    }
+                )
+            }
+        });
+    })
+}
