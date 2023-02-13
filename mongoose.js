@@ -298,7 +298,7 @@ function saveResponse(respUpdateDTO) {
                             function onFullFillment(resp) {
                                 resolve(new ResponseDTO(resp.id, resp.content, resp.author.name, resp.date));
                         })
-
+                    }
                 })
 
             }
