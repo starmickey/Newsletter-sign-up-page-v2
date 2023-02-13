@@ -95,7 +95,7 @@ function getAllPosts(latestDate) {
             function onFullFillment(postDTOs) {
                 postDTOs.forEach(postDTO => {
                     postUIs.push(new PostUI(postDTO.id, postDTO.name,
-                        postDTO.content, postDTO.date, postDTO.author.name));
+                        postDTO.content, postDTO.date, postDTO.author.name, []));
                 });
                 resolve(postUIs.reverse());
             },
@@ -118,7 +118,7 @@ function getPost(id) {
         mongooseInterface.getPostById(id).then(
 
             function onFullfillment(post) {
-                const postUI = new PostUI(post.id, post.name, post.content, post.date, post.author.name);
+                const postUI = new PostUI(post.id, post.name, post.content, post.date, post.author.name, []);
                 resolve(postUI);
             }, 
             function onRejection(error) {

@@ -77,7 +77,7 @@ app.post('/login', function (req, res) {
 
 app.get('/', function (req, res) {
 
-    const homePost = new PostUI('', 'Home', 'this is my home content', new Date(), 'starmickey');
+    const homePost = new PostUI('', 'Home', 'this is my home content', new Date(), 'starmickey', []);
 
     controller.getAllPosts(new Date()).then(
         function onFullFillment(postUIs) {
@@ -97,7 +97,7 @@ app.get('/', function (req, res) {
 
 app.get('/about', function (req, res) {
 
-    const aboutPost = new PostUI('', 'About', 'this is my about content', new Date(), 'starmickey');
+    const aboutPost = new PostUI('', 'About', 'this is my about content', new Date(), 'starmickey', []);
 
     res.render('about', {
         aboutPost: aboutPost,
