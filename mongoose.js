@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const { PostUpdateDTO } = require('./data-objects/PostUpdateDTO');
+const { ResponseDTO } = require('./data-objects/ResponseDTO');
+const { ResponseUpdateDTO } = require('./data-objects/ResponseUpdateDTO');
 const { UpdateAction } = require('./data-objects/UpdateAction');
 const { AuthorDTO } = require(__dirname + '/data-objects/AuthorDTO.js');
 const { PostDTO } = require(__dirname + '/data-objects/PostDTO.js');
@@ -59,6 +61,34 @@ const postSchema = new mongoose.Schema({
 const Post = new mongoose.model('post', postSchema);
 
 
+
+const responseSchema = new mongoose.Schema({
+    content: {
+        type: String,
+        required: true
+    }, 
+    date: {
+        type: Date,
+        required: true
+    },
+    author: {
+        type: authorSchema,
+        required: true
+    },
+    post: {
+        type: postSchema,
+        required: true
+    },
+    rmDate: {
+        type: Date,
+        default: null
+    }
+});
+
+const Response = new mongoose.model('response', responseSchema);
+
+
+
 // Export functions
 
 function createAuthor(name, password) {
@@ -99,6 +129,67 @@ function getAuthor(name, password) {
 }
 
 exports.getAuthor = getAuthor;
+
+
+
+
+
+function getPostById(postId) {
+
+    return new Promise((resolve, reject) => {
+
+        Post.findOne({ _id: postId, rmDate: null }, function (error, post) {
+
+            if (error) {
+                reject(error)
+
+            } else if (post === null) {
+                reject('post not found')
+
+            } else {
+                const author = new AuthorDTO(post.author.id, post.author.name);
+                resolve(new PostDTO(post.id, post.name, post.content, post.date, author));
+            }
+        })
+    })
+}
+
+
+exports.getPostById = getPostById;
+
+
+
+
+function getAllPosts(latestDate, numPosts) {
+
+    let postDTOs = [];
+
+    return new Promise((resolve, reject) => {
+
+        Post.find({ date: { $lte: latestDate }, rmDate: null }, function (error, posts) {
+
+            if (error) {
+                reject(error);
+
+            } else {
+                const numPostsReturned = (posts.length > numPosts) ? numPosts : posts.length;
+                for (let index = 0; index < numPostsReturned; index++) {
+                    const post = posts[index];
+
+                    const authorDTO = new AuthorDTO(post.author.id, post.author.name);
+                    postDTOs.push(new PostDTO(post.id, post.name, post.content, post.date, authorDTO));
+                }
+
+                resolve(postDTOs);
+            }
+        })
+    })
+}
+
+
+exports.getAllPosts = getAllPosts;
+
+
 
 
 
@@ -173,91 +264,57 @@ exports.savePost = savePost;
 
 
 
-
-function getPostById(postId) {
-
-    return new Promise((resolve, reject) => {
-
-        Post.findOne({ _id: postId, rmDate: null }, function (error, post) {
-
-            if (error) {
-                reject(error)
-
-            } else if (post === null) {
-                reject('post not found')
-
-            } else {
-                const author = new AuthorDTO(post.author.id, post.author.name);
-                resolve(new PostDTO(post.id, post.name, post.content, post.date, author));
-            }
-        })
-    })
-}
-
-
-exports.getPostById = getPostById;
-
-
-
-
-function getAllPosts(latestDate, numPosts) {
-
-    let postDTOs = [];
+function saveResponse(respUpdateDTO) {
 
     return new Promise((resolve, reject) => {
 
-        Post.find({ date: { $lte: latestDate }, rmDate: null }, function (error, posts) {
+        Author.findOne({_id: respUpdateDTO.authorId}, function(error, author) {
 
-            if (error) {
+            if(error) {
                 reject(error);
 
+            } else if (author === null) {
+                reject('author not found');
+            
             } else {
-                const numPostsReturned = (posts.length > numPosts) ? numPosts : posts.length;
-                for (let index = 0; index < numPostsReturned; index++) {
-                    const post = posts[index];
 
-                    const authorDTO = new AuthorDTO(post.author.id, post.author.name);
-                    postDTOs.push(new PostDTO(post.id, post.name, post.content, post.date, authorDTO));
-                }
+                Post.findOne({_id: respUpdateDTO.postId, rmDate: null}, function(error, post) {
+                    if (error) {
+                        reject(error);
 
-                resolve(postDTOs);
+                    } else if (post === null) {
+                        reject('post not found');
+                    
+                    } else if (respUpdateDTO.action === UpdateAction.create){
+
+                        const response = new Response({
+                            content: respUpdateDTO.content,
+                            date: new Date(),
+                            author: author,
+                            post: post
+                        });
+
+                        response.save().then(
+                            function onFullFillment(resp) {
+                                resolve(new ResponseDTO(resp.id, resp.content, resp.author.name, resp.date));
+                        })
+
+                })
+
             }
-        })
+        });
     })
 }
 
 
-exports.getAllPosts = getAllPosts;
 
-
-
-// getAuthor('test','test').then(function (author) {
-//     const postUpdateDTOs = [];
-//     postUpdateDTOs.push(new PostUpdateDTO('', 'first post', 'content', author.id, UpdateAction.create));
-//     postUpdateDTOs.push(new PostUpdateDTO('', 'second post', 'content', author.id, UpdateAction.create));
-//     postUpdateDTOs.push(new PostUpdateDTO('', 'third post', 'content', author.id, UpdateAction.create));
-//     // postUpdateDTOs.push(new PostUpdateDTO('', 'fourth post', 'content', author.id, UpdateAction.create));
-//     // postUpdateDTOs.push(new PostUpdateDTO('', 'fifth post', 'content', author.id, UpdateAction.create));
-//     // postUpdateDTOs.push(new PostUpdateDTO('', 'sixth post', 'content', author.id, UpdateAction.create));
-//     // postUpdateDTOs.push(new PostUpdateDTO('', 'seventh post', 'content', author.id, UpdateAction.create));
-
-//     postUpdateDTOs.forEach(postUpdateDTO => {
-//         savePost(postUpdateDTO).then(function (postDTO) {
-//             console.log(postDTO);
-//         }, function (error) {
-//             console.log(error);
-//         })
-//     });
-
-// }, function (error) {
-// console.log(error);
-// })
-// getAllPosts(new Date(), 5).then(function (postDTOs) {
-// console.log(postDTOs);
-// }, function (error) {
-// console.log(error);
-// });
-
-// Post.find({ date: { $lte: new Date() }, rmDate: null }, function (error, posts) {
-    // console.log(posts);
+// getPostById('63ea880b2fb791702c61ee89').then(function (post) {
+//     // console.log(post);
+//     const r = new ResponseUpdateDTO('', 'contenttt', post.author.id, post.id, UpdateAction.create);
+//     console.log(r);
+//     saveResponse(r).then(function (res) {
+//         console.log(res);
+//     }, function (error) {
+//         console.log(error);
+//     })
 // })
